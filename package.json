@@ -1,7 +1,20 @@
 {
-  "name": "helloworld",
+  "name": "steel_project",
   "main": "index.html",
   "description": "测试",
+  "window": {
+    "title": "steel_project",
+    "toolbar": false,
+    "frame": true,
+    "show_in_taskbar":true,
+    "width": 1080,
+    "height": 760,
+    "position": "mouse",
+    "min_width": 600,
+    "min_height": 200,
+    "max_width": 800,
+    "max_height": 600
+  },
   "author": "Lich_Amnesia",
   "license": "ISC"
 }
