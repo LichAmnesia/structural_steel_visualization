@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Context Menu</title>
+    <!-- <script src='node_modules/sql.js/js/sql.js'></script> -->
+    <script type="text/javascript" src="spider.js"></script>
+  </head>
+  <body style="width: 100%; height: 100%;">
+    <p>'Right Click' to show context menu.</p>
+    <h1>Hello World!</h1>
+    <script type="text/javascript">
+
+    </script>
+
+    <script>
+
+        var menu = new nw.Menu();
+
+        menu.append(new nw.MenuItem({
+            label: 'Item A',
+            click: function(){
+                alert('You have clicked at "Item A"');
+            }
+        }));
+        menu.append(new nw.MenuItem({ label: 'Item B'}));
+        menu.append(new nw.MenuItem({ type: 'separator'}));
+        menu.append(new nw.MenuItem({ label: 'Item C'}));
+
+        document.body.addEventListener('contextmenu', function(ev){
+            ev.preventDefault();
+            menu.popup(ev.x, ev.y);
+            return false;
+            }, false);
+
+        var os = require('os');
+        document.writeln('you are running on ', os.platform(),'<br>');
+
+
+        // 获取间隔几天的日期，n表示天数
+        function showdate(n) 
+        { 
+            var uom = new Date(); 
+            uom.setDate(uom.getDate() + n); 
+            if (uom.getMonth() + 1 < 10){
+                uom = uom.getFullYear() + "0" + (uom.getMonth()+1) + "" + (uom.getDate() < 10? "0" + uom.getDate(): uom.getDate()); 
+            }else {
+                uom = uom.getFullYear() + "" + (uom.getMonth()+1) + "" + (uom.getDate() < 10? "0" + uom.getDate(): uom.getDate()); 
+            }
+            return uom; 
+        } 
+        // spider(city, datetime, saveSql);
+        var my_date = new Date();
+        //上海 南京 杭州 镇江 常州 无锡 苏州 扬州
+        var city_list = ['shanghai','nanjing','hangzhou','zhenjiang','changzhou','jswuxi','suzhou','yangzhou'];
+        for (var now_date = -10; now_date < 1; now_date += 1){
+            for (var now_city = 0; now_city < city_list.length; now_city += 1){
+                document.write('<br>', showdate(now_date), ' ', city_list[now_city]); 
+                spider(city_list[now_city], showdate(now_date), saveSql);               
+            }
+        }
+        // document.write('date :', showdate(0));
+        // document.write('date :', showdate(1));
+        // document.write('date :', showdate(-20));
+        // document.write('date :', showdate(4));
+        
+        // spider('shanghai', '20160728', saveSql);
+
+        // Get the current window
+        // var win = nw.Window.get();
+        // win.showDevTools()
+    </script>
+
+  </body>
+</html>
