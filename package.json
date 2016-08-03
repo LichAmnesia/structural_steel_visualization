@@ -4,17 +4,21 @@
   "description": "测试",
   "window": {
     "title": "steel_project",
-    "toolbar": false,
+    // "toolbar": false,
     "frame": true,
-    "show_in_taskbar":true,
-    "width": 1080,
-    "height": 760,
-    "position": "mouse",
-    "min_width": 600,
+    "show_in_taskbar": true,
+    "width": 1200,
+    "height": 900,
+    "position": "center",
+    "min_width": 900,
     "min_height": 200,
-    "max_width": 800,
-    "max_height": 600
+    "max_width": 1400,
+    "max_height": 600,
+    "toolbar": true
   },
   "author": "Lich_Amnesia",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "echarts": "^3.2.2"
+  }
 }

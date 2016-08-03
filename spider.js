@@ -7,10 +7,11 @@ var async = require('async');
 var path = require('path');
 var fs = require('fs');
 var SQL = require('sql.js');
+var db;
 try {
 // Load the db
     var filebuffer = fs.readFileSync('steel.sqlite');
-    var db = new SQL.Database(filebuffer);
+    db = new SQL.Database(filebuffer);
 }catch(err) {
     alert(err + "数据库不存在");
 }
@@ -41,12 +42,12 @@ var spider = function(city, datetime, callback){
         var reg = new RegExp("<td>[^\d]" + product_model + "</td><td>" + model + "</td><td>[\\d]+</td>","g");
         // var reg = /<td>φ10<\/td><td>HRB400<\/td><td>[\d]+<\/td>/g;
         // alert(reg);
-        
+        console.log(reg);
         var price_string = res.text.match(reg)[0];
-        // alert(price_string);
+        console.log(price_string);
         var price_reg = /[\d]+/g;
         var price = price_string.match(price_reg)[2];
-        // alert(price);
+        console.log(price);
         callback(datetime, city, price, product_model, model);
     }); 
 }
@@ -65,11 +66,13 @@ var saveSql = function(datetime, city, price, product_model, model){
     }
     sqlstr = "SELECT count(*) FROM steel WHERE datetime = " + datetime + " AND city = '" + city + "';";
     sqlres = db.exec(sqlstr);
+    console.log(sqlres[0]['values']);
     if (sqlres[0]['values'][0][0] > 0){
         sqlstr = "UPDATE steel SET datetime = " + datetime + ", city = '" + city + "', price = " + price + 
                  ", product_model = " + product_model + ", model = '" + model + "'" + 
                  "WHERE datetime = " + datetime + " AND city = '" + city + "';";
     }else {
+        console.log("插入数据");
         sqlstr = "INSERT INTO steel VALUES (" + datetime + ", '" + city + "', " + price + ", " + product_model + ", '" + model + "', '');";
     }
     console.log(sqlstr);
@@ -83,3 +86,24 @@ var saveSql = function(datetime, city, price, product_model, model){
     fs.writeFileSync("steel.sqlite", buffer);
 }
 
+// spider('shanghai', '20160606', saveSql);
+
+// require('nw.gui').Window.get().showDevTools()
+
+// var echarts = require('echarts');
+//         // 基于准备好的dom，初始化echarts实例
+//         var myChart = echarts.init(document.getElementById('nanjingchart'));
+//         // 绘制图表
+//         myChart.setOption({
+//             title: { text: 'ECharts 入门示例' },
+//             tooltip: {},
+//             xAxis: {
+//                 data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+//             },
+//             yAxis: {},
+//             series: [{
+//                 name: '销量',
+//                 type: 'bar',
+//                 data: [5, 20, 36, 10, 10, 20]
+//             }]
+//         });       
