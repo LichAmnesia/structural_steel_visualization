@@ -86,9 +86,9 @@
                         if (now_date > begin_date && price_array[price_array_index - 1][now_city] != -1){
                             var price_change = price_array[price_array_index][now_city] - price_array[price_array_index - 1][now_city];
                             if (price_change < 0){
-                                data += "<td>" +  now_price + " <img src='Arrows-Down-icon.png' height='15' width='15'>" + -price_change + "</td>";
+                                data += "<td>" +  now_price + " <img src='static/Arrows-Down-icon.png' height='15' width='15'>" + -price_change + "</td>";
                             }else {
-                                data += "<td>" +  now_price + " <img src='Arrows-Up-icon.png' height='15' width='15'>" + price_change + "</td>";
+                                data += "<td>" +  now_price + " <img src='static/Arrows-Up-icon.png' height='15' width='15'>" + price_change + "</td>";
                             }
                             
                         }else {
