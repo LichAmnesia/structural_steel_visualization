@@ -4,17 +4,16 @@
   "description": "测试",
   "window": {
     "title": "steel_project",
-    // "toolbar": false,
+    "toolbar": false,
     "frame": true,
     "show_in_taskbar": true,
     "width": 1200,
-    "height": 900,
+    "height": 1000,
     "position": "center",
     "min_width": 900,
     "min_height": 200,
     "max_width": 1400,
-    "max_height": 600,
-    "toolbar": true
+    "max_height": 2000
   },
   "author": "Lich_Amnesia",
   "license": "ISC",

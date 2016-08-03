@@ -2,18 +2,21 @@
 <html>
   <head>
   <meta charset="UTF-8">
-    <title>Context Menu</title>
+    <title>钢材价格统计</title>
     <!-- <script src='node_modules/sql.js/js/sql.js'></script> -->
-    <link rel="stylesheet" type="text/css" href="css/pure-min.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/pure-min.css">
     <script type="text/javascript" src="spider.js"></script>
      <script type="text/javascript" src="echarts.min.js"></script>
   </head>
   <body>
-  <i class="fa fa-arrow-up"></i>
+  <!-- <i class="fa fa-arrow-up"></i> -->
+  <!-- <img src="Arrows-Up-icon.png" height="20" width="20">
+<img src="Arrows-Down-icon.png" height="42" width="42"> -->
+
     <h1>钢材价格（以螺纹钢  φ10 HRB400 为参考）</h1>
-    <div id="div1" style="display: none" mce_style="display: none">    
-      <div id="table1"></div>        
+    <div id="div1" style="display: none; margin: 0 auto;" mce_style="display: none">    
+      <div id="table1" style="margin: 0 auto;"></div>        
     </div>   
 
    
@@ -82,8 +85,12 @@
                         price_array[price_array_index].push(now_price);
                         if (now_date > begin_date && price_array[price_array_index - 1][now_city] != -1){
                             var price_change = price_array[price_array_index][now_city] - price_array[price_array_index - 1][now_city];
-
-                            data += "<td>" +  now_price + "<i class='fa fa-camera-retro'>22</i>" + price_change + "</td>";
+                            if (price_change < 0){
+                                data += "<td>" +  now_price + " <img src='Arrows-Down-icon.png' height='15' width='15'>" + -price_change + "</td>";
+                            }else {
+                                data += "<td>" +  now_price + " <img src='Arrows-Up-icon.png' height='15' width='15'>" + price_change + "</td>";
+                            }
+                            
                         }else {
                             data += "<td>" +  now_price + "</td>";
                         }
