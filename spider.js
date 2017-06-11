@@ -20,7 +20,7 @@ try {
 
 // console.log('爬虫程序开始运行......');
 
-var datetime = '20160729'
+var datetime = '20170609'
 var city = 'nanjing'
 var product_model = '10'
 var model = 'HRB400'
@@ -28,8 +28,15 @@ var model = 'HRB400'
 
 
 var spider = function(city, datetime, callback){
+    sqlstr = "SELECT count(*) FROM steel WHERE datetime = " + datetime + " AND city = '" + city + "';";
+    sqlres = db.exec(sqlstr);
+    console.log(sqlres[0]['values']);
+    if (sqlres[0]['values'][0][0] > 0){
+        return ;
+    }
     superagent  
-    .post('http://'+ city + '.96369.net/city/Quotation/quotation/1/' + datetime + '/')
+    // http://shanghai.96369.net/city/Quotation/quotation/1/20170609
+    .post('http://'+ city + '.96369.net/city/Quotation/quotation/1/' + datetime)
     .send({ 
         // 请求的表单信息Form data
     })
@@ -39,10 +46,11 @@ var spider = function(city, datetime, callback){
    .end(function(err, res){          
         // 请求返回后的处理
         // 将response中返回的结果转换成JSON对象
-        var reg = new RegExp("<td>[^\d]" + product_model + "</td><td>" + model + "</td><td>[\\d]+</td>","g");
+        var reg = new RegExp(product_model + "</td><td>" + model + "</td><td>[\\d]+</td>","g");
         // var reg = /<td>φ10<\/td><td>HRB400<\/td><td>[\d]+<\/td>/g;
         // alert(reg);
         console.log(reg);
+        console.log(res.text);
         var price_string = res.text.match(reg)[0];
         console.log(price_string);
         var price_reg = /[\d]+/g;
@@ -86,7 +94,7 @@ var saveSql = function(datetime, city, price, product_model, model){
     fs.writeFileSync("steel.sqlite", buffer);
 }
 
-// spider('shanghai', '20160606', saveSql);
+// spider('suzhou', '20160922', saveSql);
 
 // require('nw.gui').Window.get().showDevTools()
 

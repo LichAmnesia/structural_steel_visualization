@@ -21,6 +21,11 @@
 
    
     <script>
+        // sleep time expects milliseconds
+        function sleep (time) {
+          return new Promise((resolve) => setTimeout(resolve, time));
+        }
+
         // 获取间隔几天的日期，n表示天数
         function showdate(n) 
         { 
@@ -40,8 +45,9 @@
         for (var now_date = -10; now_date < 1; now_date += 1){
             for (var now_city = 0; now_city < city_list.length; now_city += 1){
                 // document.write('<br>', showdate(now_date), ' ', city_list[now_city]); 
-                spider(city_list[now_city], showdate(now_date), saveSql);               
+                spider(city_list[now_city], showdate(now_date), saveSql);    
             }
+            // sleep(10000);           
         }
         
 
@@ -561,6 +567,238 @@
             ]
         });       
     </script>
+    <!-- 过去一年的情况 -->
+    <div style="height:150px"></div>
+    <div id="chart365" style="height:750px"></div>
+    <script type="text/javascript">
+        // var echarts = require('echarts');
+        // 基于准备好的dom，初始化echarts实例
+        var price_array = new Array();
+        var price_array_index = 0;
+        var begin_date = -365;
+        var xais_data = new Array();
+        for (var now_date = begin_date; ; now_date -= 1){
+            var num = 0;
+            for (var now_city = 0; now_city < city_list.length; now_city += 1){
+                var sqlstr = "SELECT COUNT(*) FROM steel WHERE datetime = " + showdate(now_date) + " AND city = '" + city_list[now_city] + "';";
+                var db_result = db.exec(sqlstr);
+                if (db_result[0]['values'][0][0] > 0){
+                    num += 1;
+                }
+            }
+            if (num == city_list.length){
+                begin_date = now_date;
+                break;
+            }
+        }
+        // alert(begin_date);
+        for (var now_city = 0; now_city < city_list.length; now_city += 1){
+            price_array[price_array_index] = new Array();
+            // alert(showdate(now_date));
+            for (var now_date = begin_date; now_date < 1; now_date += 1){
+                var sqlstr = "SELECT COUNT(*) FROM steel WHERE datetime = " + showdate(now_date) + " AND city = '" + city_list[now_city] + "';";
+                var db_result = db.exec(sqlstr);
+                if (db_result[0]['values'][0][0] > 0){
+                    sqlstr = "SELECT price FROM steel WHERE datetime = " + showdate(now_date) + " AND city = '" + city_list[now_city] + "';";
+                    db_result = db.exec(sqlstr);    
+                    var now_price = db_result[0]['values'][0][0];
 
+                    price_array[price_array_index].push(now_price);
+                    // 获取x轴日期数据
+                    if (now_city == 0){
+                        xais_data.push(showdate(now_date));
+                    }
+                }else {
+                    // price_array[price_array_index].push(now_price);
+                    // if (now_city == 0){
+                    //     xais_data.push(showdate(now_date));
+                    // }
+                }
+            }
+            // alert(price_array[price_array_index].length);
+            price_array_index += 1;
+        }
+        
+
+        // var testdate = [120, 132, 101, 134, 90, 230, 210];
+        var myChart_ninety = echarts.init(document.getElementById('chart365'));
+        // 绘制图表
+        // 上海 南京 杭州 镇江 常州 无锡 苏州 扬州
+        myChart_ninety.setOption({
+            title: { text: '过去一年钢材价格变化' },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['上海','南京','杭州','镇江','常州','无锡','苏州','扬州']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: {show: true},
+                    dataView: {show: true, readOnly: false},
+                    magicType: {show: true, type: ['line', 'bar']},
+                    restore: {show: true},
+                    saveAsImage: {show: true}
+                }
+            },
+            calculable: true,
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xais_data
+                    // ['周一','周二','周三','周四','周五','周六','周日']
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    axisLabel : {
+                        formatter: '{value} 元'
+                    },
+                    scale: true
+                }
+            ],
+            series: [
+                {
+                    name:'上海',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[0],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'南京',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[1],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'杭州',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[2],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'镇江',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[3],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'常州',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[4],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'无锡',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[5],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'苏州',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[6],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'扬州',
+                    type:'line',
+                    // stack: '总量',
+                    data: price_array[7],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                }
+            ]
+        });       
+    </script>
   </body>
 </html>
